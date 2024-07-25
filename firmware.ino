@@ -1,8 +1,9 @@
 #include "M5StickCPlus2.h"
-
 #define DISP StickCP2.Display
 
-uint16_t BGCOLOR=0x0001; // placeholder
+#define statusBar
+
+uint16_t BGCOLOR=0x0000; // placeholder
 uint16_t FGCOLOR=0xFFF1; // placeholder
 
 struct MENU {
@@ -12,15 +13,6 @@ struct MENU {
 int cursor = 0;
 int currentProc = 0;
 
-void setup() {
-  auto cfg = M5.config();
-  StickCP2.begin(cfg);
-  DISP.setRotation(1);
-  DISP.setTextSize(1);
-  DISP.setTextFont(&fonts::Orbitron_Light_24);
-  mainMenu_drawMenu();
-}
-
 MENU mainMenu[] = {
   {"clock", 1},
   {"Battery info", 2},
@@ -28,10 +20,26 @@ MENU mainMenu[] = {
 };
 int mainMenuSize = sizeof(mainMenu) / sizeof(MENU);
 
+bool checkBtnBPressed() {
+  if (StickCP2.BtnB.wasPressed()) {
+    return true;
+  } else return false;
+}
+
+void checkExit(int proc) {
+  StickCP2.update();
+  if (checkBtnBPressed()) {
+    currentProc = proc;
+  }
+}
+
 void mainMenu_drawMenu() {
   for (int i = 0; i < 3; i++) {
-    DISP.print(cursor == i ? ">" : " ");
-    DISP.println(mainMenu[i].name);
+    if (cursor == i) {
+      DISP.setTextColor(BGCOLOR, FGCOLOR);
+    }
+    DISP.printf(" %-19s\n", mainMenu[i].name);
+    DISP.setTextColor(FGCOLOR, BGCOLOR);
   }
 }
 
@@ -39,7 +47,7 @@ void mainMenuLoop() {
   StickCP2.update();
   if (StickCP2.BtnB.wasPressed()) {
     DISP.clear();
-    DISP.setCursor(0, 0);
+    DISP.setCursor(0, 30);
     cursor++;
     if (cursor == mainMenuSize) cursor = cursor % mainMenuSize;
     mainMenu_drawMenu();
@@ -47,7 +55,7 @@ void mainMenuLoop() {
   }
   if (StickCP2.BtnA.wasPressed()) {
     DISP.clear();
-    DISP.setCursor(0, 0);
+    DISP.setCursor(0, 30);
     currentProc = mainMenu[cursor].command;
   }
 }
@@ -62,11 +70,11 @@ void clockLoop() {
     M5.Lcd.printf("%02d:%02d:%02d\n", dt.time.hours, dt.time.minutes, dt.time.seconds);
   }
   oldSeconds = dt.time.seconds;
+  checkExit(0);
 }
 
 int oldBattery;
 void battery_drawMenu(int battery) {
-  DISP.clear();
   DISP.setCursor(0, 0);
   DISP.print(battery);
 }
@@ -77,15 +85,52 @@ void batteryLoop() {
     battery_drawMenu(battery);
   }
   oldBattery = battery;
+  checkExit(0);
+}
+bool isPrinted = false;
+void settingsLoop() {
+  StickCP2.update();
+  checkExit(0);
+
+  if (!isPrinted) {
+    DISP.setCursor(0, 30);
+    DISP.print("Settings");
+    isPrinted = true;
+  }
+  // checkExit(0);
+  
 }
 
-void settingsLoop() {
-  DISP.setCursor(0, 0);
-  DISP.print("Settings");
+auto lastBatteryCheckTime = StickCP2.Rtc.getDateTime();
+void statusBar_batteryLoop() {
+  auto currentTime = StickCP2.Rtc.getDateTime();
+  if (lastBatteryCheckTime.time.minutes != currentTime.time.minutes) {
+    int battery = StickCP2.Power.getBatteryLevel();
+    oldBattery = battery;
+    lastBatteryCheckTime = currentTime;
+    DISP.setCursor(0, 0);
+    DISP.print("            ");
+  }
+  battery_drawMenu(oldBattery);
+}
+void statusBarLoop() {
+  DISP.drawLine(0, 30, 250, 30);
+  statusBar_batteryLoop();
+}
 
+void setup() {
+  auto cfg = M5.config();
+  StickCP2.begin(cfg);
+  DISP.setRotation(1);
+  DISP.setTextSize(1);
+  DISP.setTextFont(&fonts::Orbitron_Light_24);
+  DISP.setCursor(0, 30);
+  mainMenu_drawMenu();
 }
 
 void loop() {
+  statusBarLoop();
+
   switch (currentProc) {
     case 0:
       mainMenuLoop();
