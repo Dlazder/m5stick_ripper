@@ -9,14 +9,8 @@ void deleteFileLoop() {
 	}
 
 	if (isBtnAWasPressed() || isKbEnterPressed()) {
-		bool ok = false;
-		if (selectedFileSourcePid == PID::FILE_PICKER_SD) {
-			#if HAS_SD
-				ok = SD.remove(selectedFilePath.c_str());
-			#endif
-		} else {
-			ok = LittleFS.remove(selectedFilePath.c_str());
-		}
+		bool useLittleFS = (selectedFileSourcePid != PID::FILE_PICKER_SD);
+		bool ok = Storage::remove(selectedFilePath.c_str(), useLittleFS);
 
 		const char* result = ok ? L->TXT_SUCCESS : L->TXT_ERROR;
 		centeredPrint(result, MEDIUM_TEXT);

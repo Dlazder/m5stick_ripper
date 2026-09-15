@@ -10,13 +10,6 @@
 #define HAS_RTC            false
 #define HAS_PHYSICAL_KB    true
 #define HAS_SPEAKER        true
-#define HAS_SD             true
-
-// SD card SPI pins (Cardputer)
-#define SD_CS_PIN   12
-#define SD_CLK_PIN  40
-#define SD_MOSI_PIN 14
-#define SD_MISO_PIN 39
 
 // IMU axis mapping for Cardputer orientation
 #define IMU_MOUSE_X(ax, ay)           ( -(ax) )

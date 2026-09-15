@@ -63,7 +63,7 @@
     \
     /* Files (500-599) */ \
     X(FILES_MENU,         500, filesMenuLoop) \
-    X(FILE_PICKER,        501, lfsFilePickerLoop) \
+    X(FILE_PICKER,        501, filePickerLFSLoop) \
     X(FILE_PICKER_SD,     502, filePickerSDLoop) \
     X(SELECTED_FILE_MENU, 503, selectedFileMenuLoop) \
     X(FILE_DELETE,        504, deleteFileLoop) \

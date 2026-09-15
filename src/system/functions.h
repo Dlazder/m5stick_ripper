@@ -48,7 +48,7 @@
 
 // Files
 #include "../functions/files/filesMenuLoop.h"
-#include "../functions/files/lfsFilePickerLoop.h"
+#include "../functions/files/filePickerLFSLoop.h"
 #include "../functions/files/filePickerSDLoop.h"
 #include "../functions/files/selectedFileMenuLoop.h"
 #include "../functions/files/deleteFileLoop.h"

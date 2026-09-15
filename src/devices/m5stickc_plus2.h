@@ -7,13 +7,6 @@
 #define HAS_RTC            true
 #define HAS_PHYSICAL_KB    false
 #define HAS_SPEAKER        true
-#define HAS_SD             true
-
-// SD card SPI pins (HAT connector + Grove CS)
-#define SD_CS_PIN   32
-#define SD_CLK_PIN  0
-#define SD_MOSI_PIN 26
-#define SD_MISO_PIN 36
 
 // IMU axis mapping for mouse and level tool
 #define IMU_MOUSE_X(ax, ay)           ( (ay) )

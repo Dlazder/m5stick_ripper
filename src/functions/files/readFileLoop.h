@@ -21,12 +21,8 @@ void _rfLoad() {
 	_rfFree();
 	_rfScrollOffset = 0;
 
-	File f;
-	if (selectedFileSourcePid == PID::FILE_PICKER_SD) {
-		f = SD.open(selectedFilePath.c_str());
-	} else {
-		f = LittleFS.open(selectedFilePath.c_str());
-	}
+	bool useLittleFS = (selectedFileSourcePid != PID::FILE_PICKER_SD);
+	File f = Storage::open(selectedFilePath.c_str(), "r", useLittleFS);
 
 	if (!f) { centeredPrint("open error", MEDIUM_TEXT); return; }
 
@@ -98,9 +94,7 @@ static bool _rfDrawImage() {
 
 	// Must pass fs::FS& (not sd::SDFS& or LittleFSFS&) so the M5GFX template
 	// instantiates DataWrapperT<fs::FS>, which has a working specialization.
-	fs::FS& filesys = (selectedFileSourcePid == PID::FILE_PICKER_SD)
-		? static_cast<fs::FS&>(SD)
-		: static_cast<fs::FS&>(LittleFS);
+	fs::FS& filesys = Storage::getFS(selectedFileSourcePid != PID::FILE_PICKER_SD);
 
 	String ext = selectedFilePath.substring(selectedFilePath.lastIndexOf('.'));
 	ext.toLowerCase();

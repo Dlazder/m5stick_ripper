@@ -1,5 +1,8 @@
 // All files from the utils/ folder
 
+// Services
+#include "../services/storage/storage.h"
+
 // 1st layer utilities
 #include "../utils/statusBarUtils.h"
 #include "../utils/btnUtils.h"

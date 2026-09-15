@@ -10,20 +10,11 @@ void fileInfoLoop() {
 	if (isSetup()) {
 		size_t fileSize = 0;
 
-		if (selectedFileSourcePid == PID::FILE_PICKER_SD) {
-		#if HAS_SD
-			File f = SD.open(selectedFilePath.c_str());
-			if (f) {
-				fileSize = f.size();
-				f.close();
-			}
-		#endif
-		} else {
-			File f = LittleFS.open(selectedFilePath.c_str());
-			if (f) {
-				fileSize = f.size();
-				f.close();
-			}
+		bool useLittleFS = (selectedFileSourcePid != PID::FILE_PICKER_SD);
+		File f = Storage::open(selectedFilePath.c_str(), "r", useLittleFS);
+		if (f) {
+			fileSize = f.size();
+			f.close();
 		}
 
 		String name = selectedFilePath.substring(selectedFilePath.lastIndexOf('/') + 1);

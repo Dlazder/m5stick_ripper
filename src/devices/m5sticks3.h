@@ -7,13 +7,6 @@
 #define HAS_RTC         false
 #define HAS_PHYSICAL_KB false
 #define HAS_SPEAKER     true
-#define HAS_SD          true
-
-// SD card SPI pins (HAT connector — Hat2-Bus: G7=CS, G5=SCK, G6=MOSI, G4=MISO)
-#define SD_CS_PIN 7
-#define SD_CLK_PIN 5
-#define SD_MOSI_PIN 6
-#define SD_MISO_PIN 4
 
 // IMU axis mapping for Sticks3 orientation (horizontal / landscape)
 #define IMU_MOUSE_X(ax, ay) ( -(ax) )

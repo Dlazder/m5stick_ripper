@@ -25,12 +25,8 @@ bool _efLoad() {
     _efScrollOffset = 0;
     _efModified = false;
 
-    File f;
-    if (selectedFileSourcePid == PID::FILE_PICKER_SD) {
-        f = SD.open(selectedFilePath.c_str());
-    } else {
-        f = LittleFS.open(selectedFilePath.c_str());
-    }
+    bool useLittleFS = (selectedFileSourcePid != PID::FILE_PICKER_SD);
+    File f = Storage::open(selectedFilePath.c_str(), "r", useLittleFS);
 
     _efLines = new String[EF_MAX_LINES];
     _efTotalLines = 0;
@@ -53,28 +49,15 @@ bool _efLoad() {
 
 bool _efSave() {
     bool ok = false;
-    if (selectedFileSourcePid == PID::FILE_PICKER_SD) {
-        #if HAS_SD
-            File f = SD.open(selectedFilePath.c_str(), FILE_WRITE);
-            if (f) {
-                for (int i = 0; i < _efTotalLines; i++) {
-                    f.print(_efLines[i]);
-                    if (i < _efTotalLines - 1) f.print('\n');
-                }
-                f.close();
-                ok = true;
-            }
-        #endif
-    } else {
-        File f = LittleFS.open(selectedFilePath.c_str(), "w");
-        if (f) {
-            for (int i = 0; i < _efTotalLines; i++) {
-                f.print(_efLines[i]);
-                if (i < _efTotalLines - 1) f.print('\n');
-            }
-            f.close();
-            ok = true;
+    bool useLittleFS = (selectedFileSourcePid != PID::FILE_PICKER_SD);
+    File f = Storage::open(selectedFilePath.c_str(), "w", useLittleFS);
+    if (f) {
+        for (int i = 0; i < _efTotalLines; i++) {
+            f.print(_efLines[i]);
+            if (i < _efTotalLines - 1) f.print('\n');
         }
+        f.close();
+        ok = true;
     }
     return ok;
 }

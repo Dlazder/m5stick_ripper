@@ -20,13 +20,7 @@ void renameFileLoop() {
 			String newPath = dir + String(buf);
 			bool ok = false;
 
-			if (selectedFileSourcePid == PID::FILE_PICKER_SD) {
-				#if HAS_SD
-					ok = SD.rename(selectedFilePath.c_str(), newPath.c_str());
-				#endif
-			} else {
-				ok = LittleFS.rename(selectedFilePath.c_str(), newPath.c_str());
-			}
+			ok = Storage::rename(selectedFilePath.c_str(), newPath.c_str(), selectedFileSourcePid != PID::FILE_PICKER_SD);
 
 			if (ok) selectedFilePath = newPath;
 

@@ -5,17 +5,16 @@ MENU* sdFileMenu = nullptr;
 String* sdFileFullPaths = nullptr;
 String sdCurrentDir = "/";
 
-#if HAS_SD
 void _sdBuildMenu() {
 	if (sdFileMenu != nullptr) { delete[] sdFileMenu; sdFileMenu = nullptr; }
 	if (sdFileFullPaths != nullptr) { delete[] sdFileFullPaths; sdFileFullPaths = nullptr; }
 	sdFileCount = 0;
 
-	if (!sdBegin()) { centeredPrint("SD error", MEDIUM_TEXT); return; }
+	if (!Storage::mountSD()) { centeredPrint("SD error", MEDIUM_TEXT); return; }
 
 	String* names = nullptr;
 	bool* isDir = nullptr;
-	sdFileCount = _scanDir(SD, sdCurrentDir, names, isDir);
+	sdFileCount = Storage::list(sdCurrentDir, false, names, isDir);
 	if (sdFileCount < 0) return;
 
 	sdFileMenu = new MENU[sdFileCount + 2];
@@ -33,10 +32,8 @@ void _sdBuildMenu() {
 	delete[] names;
 	delete[] isDir;
 }
-#endif
 
 void filePickerSDLoop() {
-#if HAS_SD
 	if (isSetup()) {
 		cursor = 0;
 		sdCurrentDir = "/";
@@ -97,10 +94,4 @@ void filePickerSDLoop() {
 	if (isWebDataRequested()) {
 		webData = generateWebData("menu", generateMenuString(sdFileMenu, totalItems));
 	}
-#else
-	if (isSetup()) {
-		centeredPrint("No SD", MEDIUM_TEXT);
-	}
-	checkExit(PID::FILES_MENU);
-#endif
 }

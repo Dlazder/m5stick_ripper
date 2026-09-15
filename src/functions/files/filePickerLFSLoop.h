@@ -12,11 +12,11 @@ void _lfsBuildMenu() {
 	if (lfsFileFullPaths != nullptr) { delete[] lfsFileFullPaths; lfsFileFullPaths = nullptr; }
 	lfsFileCount = 0;
 
-	if (!lfsBegin()) { centeredPrint("LittleFS error", MEDIUM_TEXT); return; }
+	if (!Storage::mountLittleFS()) { centeredPrint("LittleFS error", MEDIUM_TEXT); return; }
 
 	String* names = nullptr;
 	bool* isDir = nullptr;
-	lfsFileCount = _scanDir(LittleFS, lfsCurrentDir, names, isDir);
+	lfsFileCount = Storage::list(lfsCurrentDir, true, names, isDir);
 	if (lfsFileCount < 0) return;
 
 	lfsFileMenu = new MENU[lfsFileCount + 2];
@@ -40,7 +40,7 @@ void _lfsBuildMenu() {
 	delete[] isDir;
 }
 
-void lfsFilePickerLoop() {
+void filePickerLFSLoop() {
 	if (isSetup()) {
 		_lfsStoredReturnPid = lfsReturnPid;
 		_lfsStoredCancelPid = lfsCancelPid;
